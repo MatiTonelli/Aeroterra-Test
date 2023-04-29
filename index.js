@@ -1,18 +1,39 @@
 // Crea un mapa en el elemento con el ID "map-container"
-var map = L.map("map-container").setView([-34.595866, -58.370659], 17);
+var map = L.map("map-container").setView([-34.595866, -58.370659], 14);
 
 // Agrega un mosaico de OpenStreetMap como capa base del mapa
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
 // inicializamos algunas marcas desde data.json
-
+fetch("data.json")
+  .then((response) => response.json())
+  .then((data) => {
+    for (let i = 0; i < data.length; i++) {
+      const ubi = data[i];
+      const htmlContent = `
+    <div>
+        <p>Descripcion: ${ubi.name}</p>
+        <p>Direccion: ${ubi.direction}</p>
+        <p>Telefono: ${ubi.phone}</p>
+        <p>(X, Y): ${ubi.long}, ${ubi.lat}</p>
+        <p>Categoria: ${ubi.type}</p>
+        <button>Borrar marcador</button>
+    </div>`;
+      L.marker([Number(ubi.lat), Number(ubi.long)], { interactive: true })
+        .addTo(map)
+        .bindPopup(htmlContent);
+    }
+  })
+  .catch((error) => {
+    console.error("Error:", error);
+  });
 
 map.on("click", function (e) {
   // recuperar lat y lng del click
   let lat = e.latlng.lat;
   let lng = e.latlng.lng;
 
-  // llamada a la api
+  // llamada a la api para obtener direccion
   fetch(
     `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
   )
@@ -47,8 +68,37 @@ document.querySelector("form").addEventListener("submit", (event) => {
     L.marker([Number(lat), Number(long)], { interactive: true })
       .addTo(map)
       .bindPopup(htmlContent);
-  } else {
-    console.log("no valida");
+  }
+});
+
+document.querySelector("#button-searchbar").addEventListener("click", () => {
+  let busqueda = document.querySelector("#searchbar").value;
+  if (busqueda) {
+    busqueda = busqueda.replace(" ", "%20");
+    fetch(
+      "https://nominatim.openstreetmap.org/search?q=" +
+        busqueda +
+        "&format=json"
+    )
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (data) {
+        for (let i = 0; i < data.length && i < 5; i++) {
+          let resultado = data[i];
+          const nuevoElemento = document.createElement("div");
+          const nombre = document.createElement("p");
+          nombre.textContent = resultado.display_name;
+          const coordenadas = document.createElement("p");
+          coordenadas.textContent = resultado.lat + ", " + resultado.lon;
+          nuevoElemento.appendChild(nombre);
+          nuevoElemento.appendChild(coordenadas);
+          nuevoElemento.classList.add("resultados");
+          document
+            .querySelector("#searchbar-results")
+            .appendChild(nuevoElemento);
+        }
+      });
   }
 });
 

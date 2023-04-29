@@ -24,8 +24,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  top: 5px;
-  left: 4%;
+  bottom: 10px;
+  left: 10px;
   width: 450px;
   background-color: rgb(255, 255, 255);
   z-index: 10;
@@ -75,4 +75,54 @@ form label {
   margin-left: 30%;
   opacity: 0;
   color: red;
+}
+
+#searchbar-container{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: white;
+    height: 7%;
+    width: 40em;
+    z-index: 10;
+    border-top-right-radius: 30px;
+    border-top-left-radius: 30px;
+}
+
+#searchbar-container input {
+    height: 100%;
+    width: 80%;
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
+}
+
+#searchbar-results{
+    
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    background-color: white;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    padding-bottom: 15px;
+}
+
+.resultados {
+    padding: 3em;
+    background-color: white;
+    width: 100%;
+    height: 3.5em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.resultados :first-child {
+    width: 60%;
+}
+
+.resultados:hover{
+    background-color: rgb(173, 173, 173);
+    cursor: pointer;
 }
