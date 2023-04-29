@@ -14,13 +14,59 @@
   </head>
   <body>
     <div id="form-container">
-        <form action="">
-            <input type="text">
-            <input type="text">
-            <input type="text">
-            <input type="text">
-            <input type="text">
-        </form>
+      <form action="" id="form">
+        <div class="label-containers">
+          <label for="name">
+            Nombre:
+            <input id="name" type="text" class="form-inputs" />
+          </label>
+          <p class="alertaInputs" id="alerta-name">alerta</p>
+        </div>
+
+        <div class="label-containers">
+          <label for="direction">
+            Direccion:
+            <input id="direction" type="text" class="form-inputs" />
+          </label>
+          <p class="alertaInputs" id="alerta-direction">alerta</p>
+        </div>
+
+        <div class="label-containers">
+          <label for="phone">
+            Telefono:
+            <input id="phone" type="text" class="form-inputs" />
+          </label>
+          <p class="alertaInputs" id="alerta-phone">alerta</p>
+        </div>
+
+        <div class="label-containers">
+          <label for="type">
+            Categoria:
+            <input id="type" type="text" class="form-inputs" />
+          </label>
+          <p class="alertaInputs" id="alerta-type">alerta</p>
+        </div>
+
+        <p>Coordenadas:</p>
+
+        <div class="label-containers">
+          <label for="long">
+            Longitud:
+            <input id="long" type="text" class="form-inputs" />
+          </label>
+          <p class="alertaInputs" id="alerta-long">alerta</p>
+        </div>
+
+        <div class="label-containers">
+          <label for="lat">
+            Latitud:
+            <input id="lat" type="text" class="form-inputs" />
+          </label>
+          <p class="alertaInputs" id="alerta-lat">alerta</p>
+        </div>
+
+        <input type="submit" value="Guardar" id="submit" />
+      </form>
     </div>
     <div id="map-container"></div>
     <script
