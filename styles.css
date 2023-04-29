@@ -26,7 +26,6 @@ body {
   align-items: center;
   top: 5px;
   left: 4%;
-  height: 400px;
   width: 450px;
   background-color: rgb(255, 255, 255);
   z-index: 10;
@@ -40,8 +39,8 @@ body {
   justify-content: center;
   height: 100%;
   width: 100%;
-  gap: 3%;
-  padding: 0 4% 0 4%;
+  gap: .5em;
+  padding: 4%;
 }
 
 form label {
@@ -50,17 +49,30 @@ form label {
   width: 100%;
 }
 
-.label-containers{
-    width: 100%;
+#direction-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 3%;
+}
+
+#direction-autocomplete {
+  width: 70%;
+  margin-left: -20%;
+  height: 5em;
+}
+
+.label-containers {
+  width: 100%;
 }
 
 .form-inputs {
-    width: 70%;
-    margin-left: -20%;
+  width: 70%;
+  margin-left: -20%;
 }
 
 .alertaInputs {
-    margin-left: 30%;
-    opacity: 0;
-    color: red;
+  margin-left: 30%;
+  opacity: 0;
+  color: red;
 }

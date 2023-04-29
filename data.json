@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Oficinas de Aeroterra",
+    "direction": "Av. Eduardo Madero 1020, C1001 CABA, Buenos Aires, Argentina",
+    "phone": "01152720900",
+    "type": "Comercial",
+    "long": "-58.370787",
+    "lat": "-34.595851"
+  },
+  {
+    "name": "Estacion Retiro, Ferrocarril Mitre",
+    "direction": "Retiro-Mitre Station, Av. Dr. José María Ramos Mejía 1430, C1104 Buenos Aires",
+    "phone": "08002228736",
+    "type": "Comercial",
+    "long": "-58.37476548826053",
+    "lat": "-34.591561612458726"
+  },
+  {
+    "name": "Reserva Ecológica Costanera Sur",
+    "direction": "Reserva Ecológica Costanera Sur, Carola Lorenzini, Puerto Madero, Buenos Aires, Comuna 1, Ciudad Autónoma de Buenos Aires, C1107AAT, Argentina",
+    "phone": "0111548931853",
+    "type": "Mixta",
+    "long": "58.35306644439698",
+    "lat": "-34.6075328058323"
+  }
+]

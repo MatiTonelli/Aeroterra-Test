@@ -23,12 +23,9 @@
           <p class="alertaInputs" id="alerta-name">alerta</p>
         </div>
 
-        <div class="label-containers">
-          <label for="direction">
-            Direccion:
-            <input id="direction" type="text" class="form-inputs" />
-          </label>
-          <p class="alertaInputs" id="alerta-direction">alerta</p>
+        <div class="label-containers" id="direction-container">
+          Direccion:
+          <p id="direction-autocomplete"></p>
         </div>
 
         <div class="label-containers">
@@ -43,9 +40,9 @@
           <label for="type">
             Categoria:
             <select id="type" class="form-inputs">
-              <option value="comercial">Comercial</option>
-              <option value="residencial">Residencial</option>
-              <option value="mixta">Mixta</option>
+              <option value="Comercial">Comercial</option>
+              <option value="Residencial">Residencial</option>
+              <option value="Mixta">Mixta</option>
             </select>
           </label>
           <p class="alertaInputs" id="alerta-type">alerta</p>
@@ -78,6 +75,6 @@
       integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
       crossorigin=""
     ></script>
-    <script src="index.js"></script>
+    <script type="module" src="index.js"></script>
   </body>
 </html>
