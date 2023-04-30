@@ -10,6 +10,12 @@
       integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
       crossorigin=""
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -25,6 +31,7 @@
 
         <div class="label-containers" id="direction-container">
           Direccion:
+          <div class="loader" id="loader-direccion"></div>
           <p id="direction-autocomplete"></p>
         </div>
 
@@ -73,6 +80,12 @@
       <input type="text" id="searchbar" />
       <button id="button-searchbar">🔎</button>
       <div id="searchbar-results"></div>
+    </div>
+    <div id="popup-container">
+      <div id="popup-ventana">
+        <p>Esta seguro de borrar el marcador?</p>
+        <div id="botones-confirmacion"><button>Si</button><button>Cancelar</button></div>
+      </div>
     </div>
     <div id="map-container"></div>
     <script
