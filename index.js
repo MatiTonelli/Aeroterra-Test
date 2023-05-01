@@ -33,29 +33,8 @@ fetch("data.json")
   .then((response) => response.json())
   .then((data) => {
     for (let i = 0; i < data.length; i++) {
-      const ubi = data[i];
-      // contenido HTML para los popups de las marcas
-      const htmlContent = `
-	  <div style="display: flex; flex-direction: column">
-		<p><strong>Descripcion:</strong> ${ubi.name}</p>
-		<p><strong>Direccion:</strong> ${ubi.direction}</p>
-		<p><strong>Telefono:</strong> ${ubi.phone}</p>
-		<p><strong>(X, Y):</strong> ${ubi.long}, ${ubi.lat}</p>
-		<p><strong>Categoria:</strong> ${ubi.type}</p>
-		<button class='borrarMarcador' style="background-color: red; border: none; height: 2em; border-radius: 10px; cursor: pointer; color: white;">Borrar</button>
-	</div>`;
-      const markerNuevo = L.marker([Number(ubi.lat), Number(ubi.long)], {
-        icon,
-      });
-      markerNuevo.bindPopup(htmlContent).addTo(map);
-      // cuando el popup abre agregamos el eventlistener a su boton de borrar, de otra forma no encontrariamos ese boton, dado que no se crea hasta que se abre el popup
-      markerNuevo.on("popupopen", function (event) {
-        document
-          .querySelector(".borrarMarcador")
-          .addEventListener("click", () => {
-            map.removeLayer(event.target);
-          });
-      });
+      const { name, direction, phone, type, long, lat } = data[i];
+      createMark(name, direction, phone, type, long, lat);
     }
   })
   .catch((error) => {
@@ -111,9 +90,52 @@ document.querySelector("form").addEventListener("submit", (event) => {
   const allData = Object.fromEntries(data.entries());
   const { name, phone, type, long, lat } = allData;
   let direction = document.querySelector("#direction-autocomplete").innerHTML;
-
   if (validate(name, phone, long, lat)) {
-    const htmlContent = `
+    // De no existir la direccion, primero la busca y luego crea la marca
+    if (direction == "") {
+      document.querySelector("#loader-direccion").style.display = "flex";
+      fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${long}`
+      )
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          direction = data.display_name;
+          document.querySelector("#loader-direccion").style.display = "none";
+          if (!direction) {
+            direction = "Sin direccion especifica";
+          }
+          createMark(name, direction, phone, type, long, lat);
+          map.removeLayer(temporalMark);
+          document.querySelector("#name").value = "";
+          document.querySelector("#direction-autocomplete").innerHTML = "";
+          document.querySelector("#phone").value = "";
+          document.querySelector("#long").value = "";
+          document.querySelector("#lat").value = "";
+        })
+        .catch((error) => {
+          document.querySelector("#loader-direccion").style.display = "none";
+          document.querySelector("#direction-autocomplete").innerHTML =
+            "Ubicacion no encontrada";
+          console.log("Error al buscar las coordenadas: ", error);
+        });
+    } else {
+      createMark(name, direction, phone, type, long, lat);
+      map.removeLayer(temporalMark);
+      document.querySelector("#name").value = "";
+      document.querySelector("#direction-autocomplete").innerHTML = "";
+      document.querySelector("#phone").value = "";
+      document.querySelector("#long").value = "";
+      document.querySelector("#lat").value = "";
+    }
+  }
+});
+
+// Funcion que crea las marcas con sus respectivos parametros
+const createMark = (name, direction, phone, type, long, lat) => {
+  // Contenido HTML para los popups de las marcas
+  const htmlContent = `
 	<div style="display: flex; flex-direction: column">
 		<p><strong>Descripcion:</strong> ${name}</p>
 		<p><strong>Direccion:</strong> ${direction}</p>
@@ -122,26 +144,18 @@ document.querySelector("form").addEventListener("submit", (event) => {
 		<p><strong>Categoria:</strong> ${type}</p>
 		<button class='borrarMarcador' style="background-color: red; border: none; height: 2em; border-radius: 10px; cursor: pointer; color: white;">Borrar</button>
 	</div>`;
-    let markerNuevo = L.marker([Number(lat), Number(long)], {
-      icon,
-    })
-      .addTo(map)
-      .bindPopup(htmlContent);
-    map.removeLayer(temporalMark);
-    document.querySelector("#name").value = "";
-    document.querySelector("#direction-autocomplete").innerHTML = "";
-    document.querySelector("#phone").value = "";
-    document.querySelector("#long").value = "";
-    document.querySelector("#lat").value = "";
-    markerNuevo.on("popupopen", function (e) {
-      document
-        .querySelector(".borrarMarcador")
-        .addEventListener("click", () => {
-          map.removeLayer(e.target);
-        });
+  let markerNuevo = L.marker([Number(lat), Number(long)], {
+    icon,
+  })
+    .addTo(map)
+    .bindPopup(htmlContent);
+  // Cuando el popup abre agregamos el eventlistener a su boton de borrar, de otra forma no encontrariamos ese boton, dado que no se crea hasta que se abre el popup
+  markerNuevo.on("popupopen", function (e) {
+    document.querySelector(".borrarMarcador").addEventListener("click", () => {
+      map.removeLayer(e.target);
     });
-  }
-});
+  });
+};
 
 // Evento de click del boton de busqueda por texto (searchbar), solo salvamos los primeros 5 resultados
 document.querySelector("#button-searchbar").addEventListener("click", () => {
