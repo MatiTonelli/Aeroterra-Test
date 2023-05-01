@@ -96,6 +96,12 @@ form label {
   text-align: center;
 }
 
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 #submit{
     height: 3em;
     width: 25%;
@@ -252,6 +258,7 @@ form label {
 #botones-confirmacion button {
   height: 100%;
   width: 20%;
+  cursor: pointer;
 }
 
 /* Estilos para el marcador cuando el popup está abierto */

@@ -24,7 +24,7 @@
         <div class="label-containers">
           <label for="name">
             Nombre:
-            <input id="name" type="text" class="form-inputs" />
+            <input id="name" type="text" class="form-inputs" name="name"/>
           </label>
           <p class="alertaInputs" id="alerta-name">alerta</p>
         </div>
@@ -38,7 +38,7 @@
         <div class="label-containers">
           <label for="phone">
             Telefono:
-            <input id="phone" type="text" class="form-inputs" />
+            <input id="phone" type="text" class="form-inputs" name="phone" />
           </label>
           <p class="alertaInputs" id="alerta-phone">alerta</p>
         </div>
@@ -46,7 +46,7 @@
         <div class="label-containers">
           <label for="type">
             Categoria:
-            <select id="type" class="form-inputs">
+            <select id="type" class="form-inputs" name="type">
               <option value="Comercial">Comercial</option>
               <option value="Residencial">Residencial</option>
               <option value="Mixta">Mixta</option>
@@ -55,12 +55,12 @@
           <p class="alertaInputs" id="alerta-type">alerta</p>
         </div>
 
-        <p>Coordenadas:</p>
+        <p>Coordenadas</p>
 
         <div class="label-containers">
           <label for="long">
             Longitud:
-            <input id="long" type="text" class="form-inputs" />
+            <input id="long" type="text" class="form-inputs" name="long" />
           </label>
           <p class="alertaInputs" id="alerta-long">alerta</p>
         </div>
@@ -68,7 +68,7 @@
         <div class="label-containers">
           <label for="lat">
             Latitud:
-            <input id="lat" type="text" class="form-inputs" />
+            <input id="lat" type="text" class="form-inputs" name="lat" />
           </label>
           <p class="alertaInputs" id="alerta-lat">alerta</p>
         </div>
@@ -77,15 +77,9 @@
       </form>
     </div>
     <div id="searchbar-container">
-      <input type="text" id="searchbar" />
+      <input type="text" id="searchbar" placeholder="Buscar..." />
       <button id="button-searchbar">🔎</button>
-      <div id="searchbar-results"></div>
-    </div>
-    <div id="popup-container">
-      <div id="popup-ventana">
-        <p>Esta seguro de borrar el marcador?</p>
-        <div id="botones-confirmacion"><button>Si</button><button>Cancelar</button></div>
-      </div>
+      <div id="searchbar-results"><div id="loader-searchbar" class="loader"></div></div>
     </div>
     <div id="map-container"></div>
     <script

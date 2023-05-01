@@ -1,10 +1,11 @@
-// Crea un mapa en el elemento con el ID "map-container"
+// Crea un mapa en el elemento con el ID "map-container", se inicializa con las coordenadas de las oficinas de Aeroterra
 var map = L.map("map-container").setView([-34.595866, -58.370659], 14);
 
 // Agrega un mosaico de OpenStreetMap como capa base del mapa
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
-let newIcon = L.icon({
+// Creacion de los diferentes iconos que se usan
+let icon = L.icon({
   iconUrl: "pin.png",
   iconSize: [41, 41],
   iconAnchor: [20, 40],
@@ -22,38 +23,50 @@ let temporalMark = L.marker([0, 0], {
   icon: tempIcon,
 });
 
-// inicializamos algunas marcas desde data.json
+// Loader de la searchbar, necesita estar inicializado dado que se vacia su elemento padre y es destruido
+const searchbarLoader = document.createElement("div");
+searchbarLoader.classList.add("loader");
+searchbarLoader.setAttribute("id", "loader-searchbar");
+
+// Inicializamos algunas marcas desde data.json
 fetch("data.json")
   .then((response) => response.json())
   .then((data) => {
     for (let i = 0; i < data.length; i++) {
       const ubi = data[i];
-
+      // contenido HTML para los popups de las marcas
       const htmlContent = `
-    <div>
-        <p><strong>Descripcion:</strong> ${ubi.name}</p>
-        <p><strong>Direccion:</strong> ${ubi.direction}</p>
-        <p><strong>Telefono:</strong> ${ubi.phone}</p>
-        <p><strong>(X, Y):</strong> ${ubi.long}, ${ubi.lat}</p>
-        <p><strong>Categoria:</strong> ${ubi.type}</p>
-        <button class='borrarMarcador' data-id="${ubi.id}">Borrar</button>
-    </div>`;
+	  <div style="display: flex; flex-direction: column">
+		<p><strong>Descripcion:</strong> ${ubi.name}</p>
+		<p><strong>Direccion:</strong> ${ubi.direction}</p>
+		<p><strong>Telefono:</strong> ${ubi.phone}</p>
+		<p><strong>(X, Y):</strong> ${ubi.long}, ${ubi.lat}</p>
+		<p><strong>Categoria:</strong> ${ubi.type}</p>
+		<button class='borrarMarcador' style="background-color: red; border: none; height: 2em; border-radius: 10px; cursor: pointer; color: white;">Borrar</button>
+	</div>`;
       const markerNuevo = L.marker([Number(ubi.lat), Number(ubi.long)], {
-        interactive: true,
-        riseOnHover: true,
-        icon: newIcon,
+        icon,
       });
       markerNuevo.bindPopup(htmlContent).addTo(map);
+      // cuando el popup abre agregamos el eventlistener a su boton de borrar, de otra forma no encontrariamos ese boton, dado que no se crea hasta que se abre el popup
+      markerNuevo.on("popupopen", function (event) {
+        document
+          .querySelector(".borrarMarcador")
+          .addEventListener("click", () => {
+            map.removeLayer(event.target);
+          });
+      });
     }
   })
   .catch((error) => {
-    console.error("Error:", error);
+    console.error("Error al precargar marcas del archivo .json:", error);
   });
 
+// Evento click en el mapa, ubica la marca temporal y rellena inputs de direccion y coordenadas
 map.on("click", function (e) {
   map.removeLayer(temporalMark);
   document.querySelector("#searchbar-results").innerHTML = "";
-  // recuperar lat y lng del click
+  // Recuperar lat y lng del click
   let lat = e.latlng.lat;
   let lng = e.latlng.lng;
   temporalMark = L.marker([Number(lat), Number(lng)], {
@@ -62,7 +75,7 @@ map.on("click", function (e) {
     icon: tempIcon,
   }).addTo(map);
 
-  // llamada a la api para obtener direccion
+  // Llamada a la api (OpenStreetMap) para obtener direccion y rellenar info
   document.querySelector("#direction-autocomplete").innerHTML = "";
   document.querySelector("#loader-direccion").style.display = "flex";
   fetch(
@@ -82,42 +95,55 @@ map.on("click", function (e) {
       }
       document.querySelector("#long").value = lng;
       document.querySelector("#lat").value = lat;
+    })
+    .catch((error) => {
+      document.querySelector("#loader-direccion").style.display = "none";
+      document.querySelector("#direction-autocomplete").innerHTML =
+        "Ubicacion no encontrada";
+      console.log("Error al buscar direccion: ", error);
     });
 });
 
+// Submit del form principal, de estar todos los valores correctos, crea la marca. Mismo procedimiento que al precargar datos
 document.querySelector("form").addEventListener("submit", (event) => {
   event.preventDefault();
-  let name = document.querySelector("#name").value;
+  const data = new FormData(event.target);
+  const allData = Object.fromEntries(data.entries());
+  const { name, phone, type, long, lat } = allData;
   let direction = document.querySelector("#direction-autocomplete").innerHTML;
-  let phone = document.querySelector("#phone").value;
-  let type = document.querySelector("#type").value;
-  let long = document.querySelector("#long").value;
-  let lat = document.querySelector("#lat").value;
+
   if (validate(name, phone, long, lat)) {
     const htmlContent = `
-    <div>
-        <p><strong>Descripcion:</strong> ${name}</p>
-        <p><strong>Direccion:</strong> ${direction}</p>
-        <p><strong>Telefono:</strong> ${phone}</p>
-        <p><strong>(X, Y):</strong> ${long}, ${lat}</p>
-        <p><strong>Categoria:</strong> ${type}</p>
-    </div>`;
-    L.marker([Number(lat), Number(long)], { interactive: true, icon: newIcon })
+	<div style="display: flex; flex-direction: column">
+		<p><strong>Descripcion:</strong> ${name}</p>
+		<p><strong>Direccion:</strong> ${direction}</p>
+		<p><strong>Telefono:</strong> ${phone}</p>
+		<p><strong>(X, Y):</strong> ${long}, ${lat}</p>
+		<p><strong>Categoria:</strong> ${type}</p>
+		<button class='borrarMarcador' style="background-color: red; border: none; height: 2em; border-radius: 10px; cursor: pointer; color: white;">Borrar</button>
+	</div>`;
+    let markerNuevo = L.marker([Number(lat), Number(long)], {
+      icon,
+    })
       .addTo(map)
       .bindPopup(htmlContent);
     map.removeLayer(temporalMark);
     document.querySelector("#name").value = "";
     document.querySelector("#direction-autocomplete").innerHTML = "";
     document.querySelector("#phone").value = "";
-    long = document.querySelector("#long").value = "";
-    lat = document.querySelector("#lat").value = "";
+    document.querySelector("#long").value = "";
+    document.querySelector("#lat").value = "";
+    markerNuevo.on("popupopen", function (e) {
+      document
+        .querySelector(".borrarMarcador")
+        .addEventListener("click", () => {
+          map.removeLayer(e.target);
+        });
+    });
   }
 });
 
-const searchbarLoader = document.createElement("div");
-searchbarLoader.classList.add("loader");
-searchbarLoader.setAttribute("id", "loader-searchbar");
-
+// Evento de click del boton de busqueda por texto (searchbar), solo salvamos los primeros 5 resultados
 document.querySelector("#button-searchbar").addEventListener("click", () => {
   let busqueda = document.querySelector("#searchbar").value;
   if (busqueda) {
@@ -125,6 +151,7 @@ document.querySelector("#button-searchbar").addEventListener("click", () => {
     document.querySelector("#searchbar-results").appendChild(searchbarLoader);
     document.querySelector("#loader-searchbar").style.display = "flex";
     busqueda = busqueda.replace(" ", "%20");
+    // Llamada a la api (OpenStreetMap) para obtener resultados
     fetch(
       "https://nominatim.openstreetmap.org/search?q=" +
         busqueda +
@@ -173,15 +200,24 @@ document.querySelector("#button-searchbar").addEventListener("click", () => {
           document.querySelector("#searchbar-results").innerHTML = "";
           const mensaje = document.createElement("p");
           mensaje.textContent = "No se encontraron resultados";
-
           document.querySelector("#searchbar-results").appendChild(mensaje);
         }
+      })
+      .catch((error) => {
+        console.log("Error al buscar: ", busqueda, ". Error: ", error);
+        document.querySelector("#loader-searchbar").style.display = "none";
+        document.querySelector("#searchbar-results").innerHTML = "";
+        const mensaje = document.createElement("p");
+        mensaje.textContent = "Error al buscar: " + busqueda;
+        document.querySelector("#searchbar-results").appendChild(mensaje);
       });
   }
 });
 
+// Funcion validadora de los inputs, chequea datos requeridos
 const validate = (name, phone, long, lat) => {
   const phoneRegex = /[a-zA-Z]/; // Chequea si contiene letras
+  const coordRegex = /^[0-9.\-]+$/; // Chequea si contiene algo que no sea numero, punto o guion medio
 
   let valides = true;
 
@@ -202,7 +238,6 @@ const validate = (name, phone, long, lat) => {
   }
 
   if (phone.length < 5 || phoneRegex.test(phone)) {
-    console.log("phone");
     if (phone.length == 0) {
       let alerta = document.querySelector("#alerta-phone");
       alerta.style.opacity = "1";
@@ -218,8 +253,12 @@ const validate = (name, phone, long, lat) => {
     alerta.style.opacity = "0";
   }
 
-  if (Number(long) < -180 || Number(long) > 180 || long == "") {
-    console.log(long.length);
+  if (
+    Number(long) < -180 ||
+    Number(long) > 180 ||
+    long == "" ||
+    !coordRegex.test(long)
+  ) {
     if (long.length == 0) {
       let alerta = document.querySelector("#alerta-long");
       alerta.style.opacity = "1";
@@ -235,7 +274,12 @@ const validate = (name, phone, long, lat) => {
     alerta.style.opacity = "0";
   }
 
-  if (Number(lat) < -90 || Number(lat) > 90 || lat == "") {
+  if (
+    Number(lat) < -90 ||
+    Number(lat) > 90 ||
+    lat == "" ||
+    !coordRegex.test(lat)
+  ) {
     if (lat.length == 0) {
       let alerta = document.querySelector("#alerta-lat");
       alerta.style.opacity = "1";
