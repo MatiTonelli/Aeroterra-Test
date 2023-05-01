@@ -17,4 +17,5 @@
 
 ##### Indicaciones para usar la aplicacion:
 
-Para correr la prueba tecnica, te recomiendo que utilices Live Server de Visual Studio. Es muy sencillo descargarla, se encuentra entre las extensiones disponibles de Visual Studio
+Para correr la prueba tecnica, te recomiendo que utilices Live Server de Visual Studio. Es muy sencillo descargarla, se encuentra entre las extensiones disponibles de Visual Studio.
+Una vez instalada, tan solo se debe dar Click Derecho sobre el archivo HTML y seleccionar "Open with Live Server"
